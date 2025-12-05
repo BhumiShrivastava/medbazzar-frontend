@@ -16,6 +16,7 @@ export default function FilterPage (props){
   const [products,setProducts]=useState([])
   const [pageRefresh,setPageRefresh] = useState(false);
   var categoryid=''
+  var brandid=''
   try{
     if(location?.state?.categoryid==undefined)
   
@@ -26,19 +27,55 @@ export default function FilterPage (props){
   catch(e){
    
   }
-
-
-  const fetchAllProduct=async()=>{
-   var result=await postData('userinterface/display_all_productdetail_by_category',{'categoryid':categoryid,'pattern':param['pattern']})
-  setProducts(result.data)
+  //for brand
+   try{
+    if(location?.state?.brandid==undefined)
+  
+        brandid=null
+  else
+    brandid=location?.state?.brandid
   }
- useEffect(function(){
- 
-  fetchAllProduct()
+  catch(e){
+   
+  }
+   
 
- },[param['pattern']])
+
+  const fetchProducts = async () => {
+    let result;
+
+    if (categoryid) {
+      result = await postData(
+        "userinterface/display_all_productdetail_by_category",
+        { categoryid, pattern: param.pattern }
+      );
+    } 
+    else if (brandid) {
+      result = await postData(
+        "userinterface/display_all_productdetail_by_brand",
+        { brandid, pattern: param.pattern }
+      );
+    } 
+    else {
+      setProducts([]);
+      return;
+    }
+
+    setProducts(result.data);
+  };
+
+  // Single useEffect for fetching
+  useEffect(() => {
+    fetchProducts();
+  }, [param.pattern, categoryid, brandid]);
+
+
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
+
+
+
 
   return(
       <Grid container spacing={3} style={{height:'100%',width:'auto',fontFamily:'kanit',display:'flex',flexDirection:'row'}}>

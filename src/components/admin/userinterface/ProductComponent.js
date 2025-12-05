@@ -56,8 +56,8 @@ export default function ProductComponent(props) {
     );
   };
   const handleChange = (v, item) => {
+      let newItem = { ...item, qty: v };
     if (v > 0) {
-      item["qty"] = v;
       Swal.fire({
         position: "bottom-end",
         icon: "success",
@@ -69,7 +69,7 @@ export default function ProductComponent(props) {
         toast: true,
       });
 
-      dispatch({ type: "ADD_PRODUCT", payload: [item.productdetailid, item] });
+      dispatch({ type: "ADD_PRODUCT", payload: [item.productdetailid, newItem] });
     } else {
       dispatch({ type: "DELETE_PRODUCT", payload: [item.productdetailid] });
     }
@@ -80,7 +80,19 @@ export default function ProductComponent(props) {
   };
   const handleBuyNow = (item) => {
     // Dispatch the product to the cart if needed
-    dispatch({ type: 'ADD_PRODUCT', payload: [item.productdetailid, item] });
+
+      let newItem = { ...item, qty: 1 };
+       Swal.fire({
+        position: "bottom-end",
+        icon: "success",
+        title: "Added to Cart...",
+        color: "white",
+        background: "black",
+        showConfirmButton: false,
+        timer: 1500,
+        toast: true,
+      });
+    dispatch({ type: 'ADD_PRODUCT', payload: [item.productdetailid,newItem] });
 
     // Navigate to the cart page
     navigate('/carts', { state: { product: item } });

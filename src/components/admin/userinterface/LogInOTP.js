@@ -4,6 +4,7 @@ import LogInDetails from "./LogInDetails";
 import GetOTP from "./GetOTP";
 import OtpInput from 'react-otp-input';
 import { useDispatch } from "react-redux";
+import Swal from "sweetalert2";
 
 import {postData} from "../../../services/FetchNodeServices";
 export default function LogInOTP(){
@@ -15,12 +16,43 @@ const [userData,setUserData]=useState([])
 
 
 const [mobileno,setMobileno]=useState('')
-const generateOTP=()=>{
+  const generateOTP=()=>{
   var myotp=parseInt(Math.random()*8999)+1000
-  alert(myotp)
-  setOtp(myotp)
-}
-  const handleOTP=async()=>{
+   Swal.fire({
+    title: 'Your OTP',
+    text: `🔐 ${myotp}`,
+    icon: 'success',
+    confirmButtonColor: '#3085d6',
+    confirmButtonText: 'Okay',
+  });
+
+  setOtp(myotp);
+};
+
+const handleOTP = async () => {
+  const mobilePattern = /^[6-9]\d{9}$/;
+
+  if (!mobileno) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Mobile Number Required!',
+      text: 'Please enter your mobile number to continue.',
+      confirmButtonColor: '#f39c12',
+    });
+    return;
+  }
+
+  if (!mobilePattern.test(mobileno)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid Number!',
+      text: 'Please enter a valid 10-digit Indian mobile number.',
+      confirmButtonColor: '#d33',
+      timer:2000,
+    });
+    return;
+  }
+
     var result=await postData('users/check_userdata',{mobileno:mobileno})
   if(result.status==false)
   {  generateOTP()

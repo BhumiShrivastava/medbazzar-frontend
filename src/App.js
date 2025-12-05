@@ -43,9 +43,9 @@ function App() {
           <Route element ={<GetOTP/>} path={'/getotp'}/>
           <Route element ={<AddAddress/>} path={'/addaddress'}/>
           <Route element ={<FilterList/>} path={'/filterlist'}/>
+                    <Route element ={<DisplayAllProductdetails/>} path={'/display_all_productdetail'}/>
+
           <Route element ={<FilterPage/>} path={'/filterpage/:pattern'}/>
-
-
 
 
 
