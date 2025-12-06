@@ -17,12 +17,15 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { createRef } from "react";
 import PlusMinusComponent from "./PlusMinusComponent";
 import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
 import Swal from "sweetalert2";
 export default function ProductComponent(props) {
   var navigate = useNavigate();
   var dispatch = useDispatch();
   var productFromRedux = useSelector((state) => state.data);
   var productRedux = Object.values(productFromRedux);
+  const [qty, setQty] = useState(1);
+
   const theme = useTheme();
   var sld = createRef();
   const matchesMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -78,25 +81,34 @@ export default function ProductComponent(props) {
   const handleProductDetail = (item) => {
     navigate("/productdetails", { state: { data: item } });
   };
-  const handleBuyNow = (item) => {
-    // Dispatch the product to the cart if needed
+const handleBuyNow = (item) => {
 
-      let newItem = { ...item, qty: 1 };
-       Swal.fire({
-        position: "bottom-end",
-        icon: "success",
-        title: "Added to Cart...",
-        color: "white",
-        background: "black",
-        showConfirmButton: false,
-        timer: 1500,
-        toast: true,
-      });
-    dispatch({ type: 'ADD_PRODUCT', payload: [item.productdetailid,newItem] });
+  const currentQty =
+    productFromRedux[item?.productdetailid]?.qty === undefined
+      ? 1
+      : productFromRedux[item?.productdetailid]?.qty;
 
-    // Navigate to the cart page
-    navigate('/carts', { state: { product: item } });
-  };
+  let newItem = { ...item, qty: currentQty };
+
+  Swal.fire({
+    position: "bottom-end",
+    icon: "success",
+    title: "Added to Cart...",
+    color: "white",
+    background: "black",
+    showConfirmButton: false,
+    timer: 1500,
+    toast: true,
+  });
+
+  dispatch({
+    type: "ADD_PRODUCT",
+    payload: [item.productdetailid, newItem],
+  });
+
+  navigate("/carts", { state: { product: newItem } });
+};
+
   const ProductDetail = () => {
     return product?.map((item, index) => {
       return (
