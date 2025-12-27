@@ -5,6 +5,7 @@ import { serverURL } from "../../../services/FetchNodeServices";
 import { Button, Grid } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Swal from "sweetalert2";
 
 
 import { Divider } from "@mui/material";
@@ -26,11 +27,30 @@ export default function ProductList(props) {
   const matchesXS = useMediaQuery(theme.breakpoints.down("xs"));
   var product = props?.data
   const handleBuyNow = (item) => {
-    // Dispatch the product to the cart if needed
-    dispatch({ type: 'ADD_PRODUCT', payload: [item.productdetailid, item] });
-
-    // Navigate to the cart page
-    navigate('/carts', { state: { product: item } });
+   const currentQty =
+       productFromRedux[item?.productdetailid]?.qty === undefined
+         ? 1
+         : productFromRedux[item?.productdetailid]?.qty;
+   
+     let newItem = { ...item, qty: currentQty };
+   
+     Swal.fire({
+       position: "bottom-end",
+       icon: "success",
+       title: "Added to Cart...",
+       color: "white",
+       background: "black",
+       showConfirmButton: false,
+       timer: 1500,
+       toast: true,
+     });
+   
+     dispatch({
+       type: "ADD_PRODUCT",
+       payload: [item.productdetailid, newItem],
+     });
+   
+     navigate("/carts", { state: { product: newItem } });
   };
 
   const handleChange = (v, item) => {
